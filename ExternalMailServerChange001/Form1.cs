@@ -14,12 +14,13 @@ namespace ExternalMailServerChange001
 {
     public partial class FormMailServerChanger : Form
     {
-        private Boolean StartWhistle = false;
 
-        Thunderbird.Address ThisThunderbird;
+        private Thunderbird.Address thisAddress=new Thunderbird.Address();
+        private Thunderbird.PrefsData thisPrefs=new Thunderbird.PrefsData();
 
         //文字コード(ここでは、Shift JIS)
         Encoding enc = Encoding.GetEncoding("shift-jis");
+
 
         //フォームウィンドウの初期化
         public FormMailServerChanger()
@@ -30,11 +31,10 @@ namespace ExternalMailServerChange001
         //スタートボタンを押したとき
         private void buttonStart_Click(object sender, EventArgs e)
         {
-            StartWhistle = true;
             String[] lines;
 
             //行ごとの配列として、テキストファイルの中身をすべて読み込む
-            lines = File.ReadAllLines(Thunderbird.Address.ThunderbirdProfileChoicer, enc);
+            lines = File.ReadAllLines(Thunderbird.Address.ProfileChoicer, enc);
 
             foreach (var item in lines)
             {
@@ -45,12 +45,11 @@ namespace ExternalMailServerChange001
                     {
                         if (item.StartsWith("Path=Profiles/"))
                         {
-                            ThisThunderbird.ThunderbirdProfileFolder = Thunderbird.Address.ThunderbirdProfileSettingFolder + @"\Profiles\" + item.Split('/')[1];
+                            thisAddress.SetProfile(item.Split('/')[1]);
                             //test
-                            ThisThunderbird.ThunderbirdProfileFolder = Thunderbird.Address.ThunderbirdProfileSettingFolder + @"\Profiles\e763dtpl.next";
-                            ThisThunderbird.ThunderbirdProfileSetting = ThisThunderbird.ThunderbirdProfileFolder + @"\prefs.js";
-                            Debug.WriteLine(ThisThunderbird.ThunderbirdProfileFolder);
-                            Debug.WriteLine(ThisThunderbird.ThunderbirdProfileSetting);
+                            thisAddress.SetProfile("e763dtpl.next");
+                            Debug.WriteLine(thisAddress.ProfileFolder);
+                            Debug.WriteLine(thisAddress.ProfileSetting);
                             break;
                         }
                     }
@@ -58,84 +57,70 @@ namespace ExternalMailServerChange001
             }
 
             //行ごとの配列として、テキストファイルの中身をすべて読み込む
-            lines = File.ReadAllLines(ThisThunderbird.ThunderbirdProfileSetting, enc);
-            Int32 accountLastkey;
-            List<String> servers = new List<string>();
-            List<String> ids = new List<string>();
-            List<String> smtpServers = new List<string>();
-            String OldGreenfixID = null, OldGreenfixServer = null, OldGreenfixSMTPServer = null;
-            String LastGreenfixID = null, LastGreenfixServer = null, LastGreenfixSMTPServer = null;
-            Thunderbird.PrefsData thisPrefs;
+            lines = File.ReadAllLines(thisAddress.ProfileSetting, enc);
+
             foreach (var item in lines)
             {
-                if (item.StartsWith(Thunderbird.Get_User_prefs(Thunderbird.User_prefs.accountlastkey)))
-                {
-                    accountLastkey = Int32.Parse(item.Split(',')[1].Split(')')[0].Trim());
-                    Debug.WriteLine("accountLastkey:" + accountLastkey);
-                    Debug.WriteLine(item);
-                }
                 if (item.StartsWith(Thunderbird.Get_User_prefs(Thunderbird.User_prefs.accoount)))
                 {
-                    if (item.Split('\"')[3].StartsWith("id"))
-                    {
-                        thisPrefs.accountsGF.Last=item.Split('\"')[3]);
-                    }
-                    else
-                    {
-                        servers.Add(item.Split('\"')[3]);
-                    }
-
+                    //アカウントをリストに追加
+                    thisPrefs.accountsGF.AddList(item.Split('.')[2]);
                 }
                 if (item.StartsWith(Thunderbird.Get_User_prefs(Thunderbird.User_prefs.identity)))
                 {
+                    //IDをリストに追加
+                    thisPrefs.identitysGF.AddList(item.Split('.')[2]);
                     if (item.Contains("@greenfix.co.jp"))
                     {
-                        OldGreenfixID = item.Split('.')[2];
+                        //古い社外メールIDを発見→格納
+                        thisPrefs.identitysGF.SetOld(item.Split('.')[2]);
                     }
                 }
                 if (item.StartsWith(Thunderbird.Get_User_prefs(Thunderbird.User_prefs.server)))
                 {
+                    //サーバーをリストに追加
+                    thisPrefs.serversGF.AddList(item.Split('.')[2]);
                     if (item.Contains("@greenfix.co.jp") && item.Contains("userName"))
                     {
-                        OldGreenfixServer = item.Split('.')[2];
+                        //古い社外メールサーバーを発見→格納
+                        thisPrefs.serversGF.SetOld(item.Split('.')[2]);
                     }
                 }
                 if (item.StartsWith(Thunderbird.Get_User_prefs(Thunderbird.User_prefs.smtpserver)))
                 {
+                    //SMTPサーバーをリストに追加
+                    thisPrefs.smtpsGF.AddList(item.Split('.')[2]);
                     if (item.Contains("mail.greenfix.co.jp"))
                     {
-                        OldGreenfixSMTPServer = item.Split('.')[2];
-                    }
-                    if (!smtpServers.Contains(item.Split('.')[2]))
-                    {
-                        smtpServers.Add(item.Split('.')[2]);
+                        //古い社外メールSMTPサーバーを発見→格納
+                        thisPrefs.smtpsGF.SetOld(item.Split('.')[2]);
                     }
                 }
             }
-            
-                        Debug.WriteLine("LastGreenfixID:" + LastGreenfixID);
-            Debug.WriteLine("LastGreenfixServer:" + LastGreenfixServer);
-            Debug.WriteLine("LastGreenfixSMTPServer:" + LastGreenfixSMTPServer);
-            if (OldGreenfixID != null) Debug.WriteLine("OldGreenfixID:" + OldGreenfixID);
-            if (OldGreenfixServer != null) Debug.WriteLine("OldGreenfixServer:" + OldGreenfixServer);
-            if (OldGreenfixSMTPServer != null) Debug.WriteLine("OldGreenfixSMTPServer:" + OldGreenfixSMTPServer);
+
+            Debug.WriteLine("LastGreenfixID:" + thisPrefs.identitysGF.Last);
+            Debug.WriteLine("LastGreenfixServer:" + thisPrefs.serversGF.Last);
+            Debug.WriteLine("LastGreenfixSMTPServer:" + thisPrefs.smtpsGF.Last);
+            Debug.WriteLine("OldGreenfixID:" + thisPrefs.identitysGF.Old);
+            Debug.WriteLine("OldGreenfixServer:" + thisPrefs.serversGF.Old);
+            Debug.WriteLine("OldGreenfixSMTPServer:" + thisPrefs.smtpsGF.Old);
 
             List<String> copyLines_ids = new List<string>();
             List<String> copyLines_servers = new List<string>();
             List<String> copyLines_smtpservers = new List<string>();
             foreach (var item in lines)
             {
-                if (item.StartsWith("user_pref(\"mail.identity." + OldGreenfixID))
+                if (item.StartsWith("user_pref(\"mail.identity.id" + thisPrefs.identitysGF.Old.ToString()))
                 {
-                    copyLines_ids.Add(item.Replace(OldGreenfixID, "id" + (Int64.Parse(LastGreenfixID.Replace("id", "")) + 1).ToString()));
+                    copyLines_ids.Add(item.Replace("id" + thisPrefs.identitysGF.Old.ToString(), "id" + (thisPrefs.identitysGF.Last + 1).ToString()));
                 }
-                if (item.StartsWith("user_pref(\"mail.server." + OldGreenfixServer))
+                if (item.StartsWith("user_pref(\"mail.server.server" + thisPrefs.serversGF.Old.ToString()))
                 {
-                    copyLines_ids.Add(item.Replace(OldGreenfixServer, "server" + (Int64.Parse(LastGreenfixServer.Replace("server", "")) + 1).ToString()));
+                    copyLines_ids.Add(item.Replace("server" + thisPrefs.serversGF.Old.ToString(), "server" + (thisPrefs.serversGF.Last + 1).ToString()));
                 }
-                if (item.StartsWith("user_pref(\"mail.smtpserver." + OldGreenfixSMTPServer))
+                if (item.StartsWith("user_pref(\"mail.smtpserver.smtp" + thisPrefs.smtpsGF.Old.ToString()))
                 {
-                    copyLines_ids.Add(item.Replace(OldGreenfixSMTPServer, "smtp" + (Int64.Parse(LastGreenfixSMTPServer.Replace("smtp", "")) + 1).ToString()));
+                    copyLines_ids.Add(item.Replace("smtp" + thisPrefs.smtpsGF.Old.ToString(), "smtp" + (thisPrefs.smtpsGF.Last + 1).ToString()));
                 }
             }
             foreach (var item in copyLines_ids)
