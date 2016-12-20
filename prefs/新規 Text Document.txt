@@ -1,0 +1,7 @@
+mail_test758@greenfix.co.jp
+g7YSpvnZFuLc
+182.48.11.151
+iCalender(ICS)
+CalDAV
+SunJavaSystemCalenderServer(WCAP)
+https://www.mozilla.org/media/caldata/JapanHolidays.ics
