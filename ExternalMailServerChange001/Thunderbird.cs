@@ -38,27 +38,18 @@ namespace ExternalMailServerChange001
 
         public class PrefsData
         {
+            public SortedList<User_prefs, Preflist> Preflists = new SortedList<User_prefs, Preflist>();
             public class Preflist
             {
                 private List<long> list = new List<Int64>();
                 private long old = 0;
                 private long last = 0;
                 private long next = 0;
-                public long Last
-                {
-                    get
-                    {
-                        list.Sort();
-                        last = list[list.Count - 1];
-                        return last;
-                    }
-                    set => last = value;
-                }
 
-                public long Old
-                {
-                    get => old;
-                }
+                public long Last { get => last; }
+                public long Old { get => old; }
+                public long Next { get => next; }
+
                 public void SetOld(String item)
                 {
                     if (item.GetTypeCode() == TypeCode.String)
@@ -78,17 +69,23 @@ namespace ExternalMailServerChange001
                     {
                         list.Add(value);
                     }
+                    list.Sort();
+                    last = list[list.Count - 1];
+                    next = last + 1;
                 }
                 private String trimer(String item)
                 {
                     return item.Trim("identitysmtpserveraccount".ToCharArray());
                 }
-                public Int64 Getnext() { return next; }
+                public Int64 Getnext() { return Next; }
             }
-            public Preflist accountsGF=new Preflist();
-            public Preflist identitysGF = new Preflist();
-            public Preflist serversGF = new Preflist();
-            public Preflist smtpsGF = new Preflist();
+            public PrefsData()
+            {
+                Preflists.Add(User_prefs.accoount, new Preflist());
+                Preflists.Add(User_prefs.identity, new Preflist());
+                Preflists.Add(User_prefs.server, new Preflist());
+                Preflists.Add(User_prefs.smtpserver, new Preflist());
+            }
         }
     }
 }

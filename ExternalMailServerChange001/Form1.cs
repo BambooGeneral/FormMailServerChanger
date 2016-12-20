@@ -15,8 +15,8 @@ namespace ExternalMailServerChange001
     public partial class FormMailServerChanger : Form
     {
 
-        private Thunderbird.Address thisAddress=new Thunderbird.Address();
-        private Thunderbird.PrefsData thisPrefs=new Thunderbird.PrefsData();
+        private Thunderbird.Address thisAddress = new Thunderbird.Address();
+        private Thunderbird.PrefsData thisPrefs = new Thunderbird.PrefsData();
 
         //文字コード(ここでは、Shift JIS)
         Encoding enc = Encoding.GetEncoding("shift-jis");
@@ -105,22 +105,27 @@ namespace ExternalMailServerChange001
             Debug.WriteLine("OldGreenfixServer:" + thisPrefs.serversGF.Old);
             Debug.WriteLine("OldGreenfixSMTPServer:" + thisPrefs.smtpsGF.Old);
 
+            //インクリメントしてコピー
             List<String> copyLines_ids = new List<string>();
             List<String> copyLines_servers = new List<string>();
             List<String> copyLines_smtpservers = new List<string>();
             foreach (var item in lines)
             {
-                if (item.StartsWith("user_pref(\"mail.identity.id" + thisPrefs.identitysGF.Old.ToString()))
+                foreach (var item in Thunderbird.User_prefs)
                 {
-                    copyLines_ids.Add(item.Replace("id" + thisPrefs.identitysGF.Old.ToString(), "id" + (thisPrefs.identitysGF.Last + 1).ToString()));
+
                 }
-                if (item.StartsWith("user_pref(\"mail.server.server" + thisPrefs.serversGF.Old.ToString()))
+                if (item.StartsWith(Thunderbird.Get_User_prefs(Thunderbird.User_prefs.identity) + thisPrefs.Preflists[Thunderbird.User_prefs.identity].Old.ToString()))
                 {
-                    copyLines_ids.Add(item.Replace("server" + thisPrefs.serversGF.Old.ToString(), "server" + (thisPrefs.serversGF.Last + 1).ToString()));
+                    copyLines_ids.Add(item.Replace("id" + thisPrefs.Preflists[Thunderbird.User_prefs.identity].Old.ToString(), "id" + (thisPrefs.Preflists[Thunderbird.User_prefs.identity].Next).ToString()));
                 }
-                if (item.StartsWith("user_pref(\"mail.smtpserver.smtp" + thisPrefs.smtpsGF.Old.ToString()))
+                if (item.StartsWith(Thunderbird.Get_User_prefs(Thunderbird.User_prefs.server) + thisPrefs.Preflists[Thunderbird.User_prefs.server].Old.ToString()))
                 {
-                    copyLines_ids.Add(item.Replace("smtp" + thisPrefs.smtpsGF.Old.ToString(), "smtp" + (thisPrefs.smtpsGF.Last + 1).ToString()));
+                    copyLines_ids.Add(item.Replace("server" + thisPrefs.Preflists[Thunderbird.User_prefs.server].Old.ToString(), "server" + (thisPrefs.Preflists[Thunderbird.User_prefs.server].Next).ToString()));
+                }
+                if (item.StartsWith(Thunderbird.Get_User_prefs(Thunderbird.User_prefs.smtpserver) + thisPrefs.Preflists[Thunderbird.User_prefs.smtpserver].Old.ToString()))
+                {
+                    copyLines_ids.Add(item.Replace("smtp" + thisPrefs.Preflists[Thunderbird.User_prefs.smtpserver].Old.ToString(), "smtp" + (thisPrefs.Preflists[Thunderbird.User_prefs.smtpserver].Next).ToString()));
                 }
             }
             foreach (var item in copyLines_ids)
