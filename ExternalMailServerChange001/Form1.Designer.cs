@@ -30,9 +30,9 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMailServerChanger));
             this.buttonStart = new System.Windows.Forms.Button();
-            this.progressBarStatus = new System.Windows.Forms.ProgressBar();
             this.labelStatus = new System.Windows.Forms.Label();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // buttonStart
@@ -45,35 +45,41 @@
             this.buttonStart.UseVisualStyleBackColor = true;
             this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
             // 
-            // progressBarStatus
-            // 
-            this.progressBarStatus.Location = new System.Drawing.Point(12, 54);
-            this.progressBarStatus.Name = "progressBarStatus";
-            this.progressBarStatus.Size = new System.Drawing.Size(265, 23);
-            this.progressBarStatus.TabIndex = 1;
-            // 
             // labelStatus
             // 
             this.labelStatus.AutoSize = true;
             this.labelStatus.Location = new System.Drawing.Point(12, 39);
             this.labelStatus.Name = "labelStatus";
-            this.labelStatus.Size = new System.Drawing.Size(139, 12);
+            this.labelStatus.Size = new System.Drawing.Size(138, 12);
             this.labelStatus.TabIndex = 2;
-            this.labelStatus.Text = "社外メール移行期間の設定";
+            this.labelStatus.Text = "新しい社外メールのサーバー";
             // 
-            // backgroundWorker1
+            // textBox1
             // 
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.PBDW);
-            this.backgroundWorker1.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.PBPC);
-            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.PBRWC);
+            this.textBox1.Location = new System.Drawing.Point(14, 54);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(263, 19);
+            this.textBox1.TabIndex = 3;
+            this.textBox1.Text = "0.0.0.0";
+            this.textBox1.TextChanged += new System.EventHandler(this.ChangeIP);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(14, 80);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(263, 23);
+            this.button1.TabIndex = 4;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // FormMailServerChanger
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(289, 89);
+            this.ClientSize = new System.Drawing.Size(289, 115);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.labelStatus);
-            this.Controls.Add(this.progressBarStatus);
             this.Controls.Add(this.buttonStart);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormMailServerChanger";
@@ -86,9 +92,9 @@
         #endregion
 
         private System.Windows.Forms.Button buttonStart;
-        private System.Windows.Forms.ProgressBar progressBarStatus;
         private System.Windows.Forms.Label labelStatus;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button button1;
     }
 }
 

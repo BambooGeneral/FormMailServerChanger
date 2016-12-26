@@ -3,17 +3,21 @@ using System.Collections.Generic;
 
 namespace ExternalMailServerChange001
 {
+    // enum定義
+    public enum User_prefs { accoount, identity, server, smtpserver };
     public static class Thunderbird
     {
 
-        // enum定義
-        public enum User_prefs { accoount, identity, server, smtpserver };
-
-        // Gender に対する拡張メソッドの定義
-        public static string Get_User_prefs(this User_prefs gender)
+        // 拡張メソッドの定義
+        public static string Get_User_prefs_Line(this User_prefs item)
         {
-            string[] names = { "mail.account.account", "mail.identity.", "mail.server.server", "mail.smtpserver." };
-            return "user_pref(\"" + names[(int)gender];
+            string[] names = { "mail.account.account", "mail.identity.id", "mail.server.server", "mail.smtpserver.smtp" };
+            return "user_pref(\"" + names[(int)item];
+        }
+        public static string Get_User_prefs_name(this User_prefs item)
+        {
+            string[] names = { "account", "id", "server", "smtp" };
+            return names[(int)item];
         }
 
         public class Address
@@ -45,10 +49,12 @@ namespace ExternalMailServerChange001
                 private long old = 0;
                 private long last = 0;
                 private long next = 0;
+                private String name = "";
 
                 public long Last { get => last; }
                 public long Old { get => old; }
                 public long Next { get => next; }
+                public String Name { get => name; }
 
                 public void SetOld(String item)
                 {
@@ -78,13 +84,33 @@ namespace ExternalMailServerChange001
                     return item.Trim("identitysmtpserveraccount".ToCharArray());
                 }
                 public Int64 Getnext() { return Next; }
+                public Preflist(String item)
+                {
+                    name = item;
+                }
+                public String GetMembers()
+                {
+                    String ans = null;
+                    list.ForEach(delegate (Int64 item)
+                    {
+                        if (ans != null)
+                        {
+                            ans += "," + name + item.ToString();
+                        }
+                        else
+                        {
+                            ans = name + item.ToString();
+                        }
+                    });
+                    return ans;
+                }
             }
             public PrefsData()
             {
-                Preflists.Add(User_prefs.accoount, new Preflist());
-                Preflists.Add(User_prefs.identity, new Preflist());
-                Preflists.Add(User_prefs.server, new Preflist());
-                Preflists.Add(User_prefs.smtpserver, new Preflist());
+                for (User_prefs i = User_prefs.accoount; i <= User_prefs.smtpserver; i++)
+                {
+                    Preflists.Add(i, new Preflist(Get_User_prefs_name(i)));
+                }
             }
         }
     }
