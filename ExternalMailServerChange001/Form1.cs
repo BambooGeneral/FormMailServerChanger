@@ -166,6 +166,14 @@ namespace ExternalMailServerChange001
                             {
                                 copyLines[i][l] = copyLines[i][l].Replace(ServerIP, "mail.greenfix.co.jp");
                             }
+                            if (copyLines[i][l].Contains(".leave_on_server"))
+                            {
+                                copyLines[i][l] = copyLines[i][l].Replace("false", "true");
+                            }
+                            if (copyLines[i][l].Contains(".num_days_to_leave_on_server"))
+                            {
+                                copyLines[i][l] = "user_pref(\"mail.server.server"+thisPrefs.Preflists[i].Next.ToString()+".num_days_to_leave_on_server\", 14);";
+                            }
                         }
                         break;
                     case User_prefs.smtpserver:
