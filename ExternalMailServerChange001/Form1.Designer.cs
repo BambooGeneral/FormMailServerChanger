@@ -60,7 +60,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(263, 19);
             this.textBox1.TabIndex = 3;
-            this.textBox1.Text = "0.0.0.0";
+            this.textBox1.Text = "182.48.11.151";
             this.textBox1.TextChanged += new System.EventHandler(this.ChangeIP);
             // 
             // button1
